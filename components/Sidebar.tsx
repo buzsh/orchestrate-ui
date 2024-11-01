@@ -68,7 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                       className={`w-6 h-6 md:w-5 md:h-5 mr-3 ${
                         selectedWorkflowId === workflow._id
                           ? "text-white"
-                          : "text-gray-400 dark:text-gray-500"
+                          : "text-gray-500 dark:text-gray-500"
                       }`}
                     />
                     <span className="flex-1 text-left text-lg md:text-[15px] md:font-medium">{workflow.name}</span>
