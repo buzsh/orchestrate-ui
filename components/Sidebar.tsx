@@ -58,20 +58,24 @@ const Sidebar: React.FC<SidebarProps> = ({
                 <li key={workflow._id} className="group relative">
                   <div
                     onClick={() => onSelectWorkflow(workflow._id)}
-                    className={`w-full flex items-center px-4 py-3 md:px-2 md:py-1.5 rounded-md cursor-pointer ${
+                    className={`w-full flex items-center px-4 py-3 md:px-2 md:py-2 rounded-md cursor-pointer ${
                       selectedWorkflowId === workflow._id
                         ? "bg-blue-500 dark:bg-blue-600 text-white"
                         : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 md:hover:bg-gray-200 md:dark:hover:bg-[#2c2c2e]"
                     }`}
                   >
-                    <HiCube className="w-6 h-6 md:w-4 md:h-4 mr-3" />
-                    <span className="flex-1 text-left text-lg md:text-sm">{workflow.name}</span>
+                    <HiCube className="w-6 h-6 md:w-5 md:h-5 mr-3" />
+                    <span className="flex-1 text-left text-lg md:text-[15px] md:font-medium">{workflow.name}</span>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setWorkflowToDelete(workflow._id);
                       }}
-                      className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-500 dark:text-gray-400"
+                      className={`opacity-0 group-hover:opacity-100 
+                        ${selectedWorkflowId === workflow._id 
+                          ? "text-white/70 hover:text-white" 
+                          : "text-gray-500 hover:text-red-500 dark:text-gray-400"
+                        }`}
                     >
                       <HiTrash className="w-6 h-6 md:w-4 md:h-4" />
                     </button>
@@ -92,9 +96,9 @@ const Sidebar: React.FC<SidebarProps> = ({
                 { icon: HiClock, name: "History" },
               ].map((item, index) => (
                 <li key={index}>
-                  <button className="w-full flex items-center px-4 py-3 md:px-2 md:py-1.5 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 md:hover:bg-gray-200 md:dark:hover:bg-[#2c2c2e]">
-                    <item.icon className="w-6 h-6 md:w-4 md:h-4 mr-3" />
-                    <span className="text-lg md:text-sm">{item.name}</span>
+                  <button className="w-full flex items-center px-4 py-3 md:px-2 md:py-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 md:hover:bg-gray-200 md:dark:hover:bg-[#2c2c2e]">
+                    <item.icon className="w-6 h-6 md:w-5 md:h-5 mr-3" />
+                    <span className="text-lg md:text-[15px] md:font-medium">{item.name}</span>
                   </button>
                 </li>
               ))}
