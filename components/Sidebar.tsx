@@ -1,7 +1,6 @@
 import React from "react";
 import { Workflow } from "@/data/types";
 import { 
-  FaRobot, 
   FaCode, 
   FaBrain, 
   FaWrench,
@@ -22,6 +21,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   onSelectWorkflow,
   onCreateWorkflow,
 }) => {
+  // Select first workflow by default if none is selected
+  React.useEffect(() => {
+    if (selectedWorkflowId === null && workflows.length > 0) {
+      onSelectWorkflow(workflows[0].id);
+    }
+  }, [workflows, selectedWorkflowId, onSelectWorkflow]);
+
   return (
     <aside className="w-64 bg-gray-100 dark:bg-gray-900 overflow-y-auto">
       <div className="p-4">
@@ -37,19 +43,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
         <ul className="space-y-1">
-          <li>
-            <button
-              onClick={() => onSelectWorkflow(null)}
-              className={`w-full flex items-center px-2 py-1.5 rounded-md ${
-                selectedWorkflowId === null
-                  ? "bg-blue-500 dark:bg-blue-600 text-white"
-                  : "text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#2c2c2e]"
-              }`}
-            >
-              <FaRobot className="w-4 h-4 mr-3" />
-              <span>All Agents</span>
-            </button>
-          </li>
           {workflows.map((workflow) => (
             <li key={workflow.id}>
               <button
