@@ -24,6 +24,14 @@ export async function GET() {
     return NextResponse.json(workflows);
   } catch (err) {
     console.error('Failed to fetch workflows:', err);
+    // Add more detailed error logging
+    if (err instanceof Error) {
+      console.error('Error details:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
+    }
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Failed to fetch workflows' }, 
       { status: 500 }
