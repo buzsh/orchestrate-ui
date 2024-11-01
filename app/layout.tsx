@@ -17,15 +17,15 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "OrchestrateUI",
-  description: "AI-driven market research and intelligent idea generation",
+  description: "Supercharge multi-agent orchestration with a visual builder",
   openGraph: {
     title: "OrchestrateUI",
-    description: "AI-driven market research and intelligent idea generation",
-    url: "https://recon-mauve.vercel.app",
+    description: "Supercharge multi-agent orchestration with a visual builder",
+    url: "https://orchestrate-ui.vercel.app",
     siteName: "OrchestrateUI",
     images: [
       {
-        url: "https://recon-mauve.vercel.app/og-image.jpg",
+        url: "https://orchestrate-ui.vercel.app/og-image.jpg",
         width: 1200,
         height: 630,
       },
