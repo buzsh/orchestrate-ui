@@ -7,6 +7,7 @@ import Sidebar from './Sidebar';
 import AgentList from './AgentList';
 import DetailView from './DetailView';
 import { Agent, Workflow } from '@/data/types';
+import { useUpdateWorkflow } from '@/hooks/useWorkflowMutations';
 
 interface MobileLayoutProps {
   workflows: Workflow[];
@@ -17,10 +18,10 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ workflows, agents }) => {
   const router = useRouter();
   const params = useParams();
   
-  const workflowId = params.workflow ? parseInt(params.workflow as string) : null;
-  const agentId = params.agent ? parseInt(params.agent as string) : null;
+  const workflowId = params.workflow as string || null;
+  const agentId = params.agent as string || null;
 
-  const handleSelectWorkflow = (newWorkflowId: number | null) => {
+  const handleSelectWorkflow = (newWorkflowId: string | null) => {
     if (newWorkflowId) {
       router.push(`/${newWorkflowId}`);
     } else {
@@ -28,7 +29,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ workflows, agents }) => {
     }
   };
 
-  const handleSelectAgent = (newAgentId: number) => {
+  const handleSelectAgent = (newAgentId: string) => {
     if (workflowId) {
       router.push(`/${workflowId}/${newAgentId}`);
     } else {
@@ -44,35 +45,109 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ workflows, agents }) => {
     }
   };
 
-  const handleCreateWorkflow = () => {
-    // Implement workflow creation logic
-    console.log('Create workflow');
+  const handleCreateWorkflow = async () => {
+    const newWorkflow: Omit<Workflow, '_id'> = {
+      name: `New Workflow ${workflows.length + 1}`,
+      description: "A new workflow",
+      agents: [],
+      steps: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    
+    try {
+      const response = await fetch('/api/workflows', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newWorkflow),
+      });
+      if (!response.ok) throw new Error('Failed to create workflow');
+      const created = await response.json();
+      router.push(`/${created._id}`);
+    } catch (error) {
+      console.error('Failed to create workflow:', error);
+    }
   };
 
-  const handleCreateAgent = () => {
-    // Implement agent creation logic
-    console.log('Create agent');
+  const handleCreateAgent = async () => {
+    const newAgent: Omit<Agent, '_id'> = {
+      name: `New Agent ${agents.length + 1}`,
+      description: "A new AI agent",
+      role: "assistant",
+      systemPrompt: "You are a helpful AI assistant.",
+      temperature: 0.7,
+      model: "gpt-4",
+      workflows: workflowId ? [workflows.find((w: Workflow) => w._id === workflowId)!] : [],
+      conversations: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    
+    try {
+      const response = await fetch('/api/agents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newAgent),
+      });
+      if (!response.ok) throw new Error('Failed to create agent');
+      const created = await response.json();
+      if (workflowId) {
+        router.push(`/${workflowId}/${created._id}`);
+      } else {
+        router.push(`/all/${created._id}`);
+      }
+    } catch (error) {
+      console.error('Failed to create agent:', error);
+    }
   };
 
-  const handleSaveAgent = (updatedAgent: Agent) => {
-    // Implement agent save logic
-    console.log('Save agent', updatedAgent);
+  const handleSaveAgent = async (updatedAgent: Agent) => {
+    try {
+      const response = await fetch(`/api/agents/${updatedAgent._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedAgent),
+      });
+      if (!response.ok) throw new Error('Failed to update agent');
+    } catch (error) {
+      console.error('Failed to update agent:', error);
+    }
   };
 
   const filteredAgents = workflowId !== null
-    ? agents.filter(agent => agent.workflows.some(w => w.id === workflowId))
+    ? agents.filter(agent => 
+        agent.workflows.some(w => w._id === workflowId)
+      )
     : agents;
 
   const selectedAgent = agentId
-    ? agents.find(a => a.id === agentId) || null
+    ? agents.find(a => a._id === agentId) || null
     : null;
 
   const selectedWorkflow = workflowId
-    ? workflows.find(w => w.id === workflowId)
+    ? workflows.find(w => w._id === workflowId)
     : null;
 
   // Determine which view to show based on URL params
   const currentView = agentId ? 'detail' : (workflowId ? 'agents' : 'workflows');
+
+  const updateWorkflow = useUpdateWorkflow();
+
+  const handleWorkflowNameSave = async (name: string) => {
+    if (!selectedWorkflow) return;
+    
+    const updatedWorkflow: Workflow = {
+      ...selectedWorkflow,
+      name,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    try {
+      await updateWorkflow.mutateAsync(updatedWorkflow);
+    } catch (error) {
+      console.error('Failed to update workflow name:', error);
+    }
+  };
 
   return (
     <div className="h-full flex flex-col bg-white dark:bg-black text-gray-900 dark:text-gray-100">
@@ -108,6 +183,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ workflows, agents }) => {
               onSelectAgent={handleSelectAgent}
               onCreateAgent={handleCreateAgent}
               selectedWorkflowName={selectedWorkflow?.name || null}
+              onSaveWorkflow={handleWorkflowNameSave}
             />
           </div>
         )}

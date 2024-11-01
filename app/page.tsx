@@ -1,21 +1,47 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from "@/components/Sidebar";
 import AgentList from "@/components/AgentList";
 import DetailView from "@/components/DetailView";
-import { sampleWorkflows, sampleAgents } from "@/data/sampleAgentData";
 import { Agent, Workflow } from "@/data/types";
+import { useQuery } from '@tanstack/react-query';
+import { useCreateWorkflow, useUpdateWorkflow } from '@/hooks/useWorkflowMutations';
+import { useCreateAgent, useUpdateAgent } from '@/hooks/useAgentMutations';
 
 export default function Home() {
-  const [selectedWorkflowId, setSelectedWorkflowId] = useState<number | null>(null);
-  const [selectedAgentId, setSelectedAgentId] = useState<number | null>(null);
-  const [agents, setAgents] = useState(sampleAgents);
-  const [workflows, setWorkflows] = useState(sampleWorkflows);
+  const [selectedWorkflowId, setSelectedWorkflowId] = useState<string | null>(null);
+  const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
 
-  const handleCreateWorkflow = () => {
-    const newWorkflow: Workflow = {
-      id: workflows.length + 1,
+  // Initialize mutations
+  const createAgent = useCreateAgent();
+  const updateAgent = useUpdateAgent();
+  const createWorkflow = useCreateWorkflow();
+  const updateWorkflow = useUpdateWorkflow();
+
+  const { data: workflows = [], isLoading: isLoadingWorkflows } = useQuery<Workflow[]>({
+    queryKey: ['workflows'],
+    queryFn: async () => {
+      const response = await fetch('/api/workflows');
+      return response.json();
+    },
+  });
+
+  const { data: agents = [], isLoading: isLoadingAgents } = useQuery<Agent[]>({
+    queryKey: ['agents'],
+    queryFn: async () => {
+      const response = await fetch('/api/agents');
+      return response.json();
+    },
+  });
+
+  useEffect(() => {
+    if (workflows?.length && selectedWorkflowId === null) {
+      setSelectedWorkflowId(workflows[0]._id);
+    }
+  }, [workflows, selectedWorkflowId]);
+  const handleCreateWorkflow = async () => {
+    const newWorkflow: Omit<Workflow, '_id'> = {
       name: `New Workflow ${workflows.length + 1}`,
       description: "A new workflow",
       agents: [],
@@ -23,68 +49,60 @@ export default function Home() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    setWorkflows([...workflows, newWorkflow]);
-    setSelectedWorkflowId(newWorkflow.id);
+    
+    await createWorkflow.mutateAsync(newWorkflow);
   };
 
-  const handleCreateAgent = () => {
-    const newAgent: Agent = {
-      id: agents.length + 1,
+  const handleCreateAgent = async () => {
+    const newAgent: Omit<Agent, '_id'> = {
       name: `New Agent ${agents.length + 1}`,
       description: "A new AI agent",
       role: "assistant",
       systemPrompt: "You are a helpful AI assistant.",
       temperature: 0.7,
       model: "gpt-4",
-      workflows: selectedWorkflowId ? [workflows.find(w => w.id === selectedWorkflowId)!] : [],
+      workflows: selectedWorkflowId ? [workflows.find((w: Workflow) => w._id === selectedWorkflowId)!] : [],
       conversations: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
     
-    setAgents([...agents, newAgent]);
-    
-    // If we're in a workflow, add the agent to it
-    if (selectedWorkflowId) {
-      setWorkflows(workflows.map(workflow => {
-        if (workflow.id === selectedWorkflowId) {
-          return {
-            ...workflow,
-            agents: [...workflow.agents, newAgent],
-          };
-        }
-        return workflow;
-      }));
-    }
-    
-    setSelectedAgentId(newAgent.id);
+    await createAgent.mutateAsync(newAgent);
   };
 
-  const handleSaveAgent = (updatedAgent: Agent) => {
-    setAgents(agents.map(agent => 
-      agent.id === updatedAgent.id ? updatedAgent : agent
-    ));
+  const handleSaveAgent = async (updatedAgent: Agent) => {
+    await updateAgent.mutateAsync(updatedAgent);
+  };
 
-    // Update the agent in any workflows it belongs to
-    setWorkflows(workflows.map(workflow => ({
-      ...workflow,
-      agents: workflow.agents.map(agent =>
-        agent.id === updatedAgent.id ? updatedAgent : agent
-      ),
-    })));
+  const handleWorkflowNameUpdate = async (name: string) => {
+    if (!selectedWorkflow) return;
+    
+    const updatedWorkflow: Workflow = {
+      ...selectedWorkflow,
+      name,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    await updateWorkflow.mutateAsync(updatedWorkflow);
   };
 
   const selectedWorkflow = selectedWorkflowId 
-    ? workflows.find(w => w.id === selectedWorkflowId)
+    ? workflows.find((w: Workflow) => w._id === selectedWorkflowId)
     : null;
 
   const filteredAgents = selectedWorkflow
-    ? agents.filter(agent => agent.workflows.some(w => w.id === selectedWorkflowId))
+    ? agents.filter((agent: Agent) => 
+        agent.workflows.some((w: Workflow) => w._id === selectedWorkflowId)
+      )
     : agents;
 
   const selectedAgent = selectedAgentId 
-    ? agents.find(a => a.id === selectedAgentId) || null
+    ? agents.find((a: Agent) => a._id === selectedAgentId) || null
     : null;
+
+  if (isLoadingWorkflows || isLoadingAgents) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
@@ -101,6 +119,7 @@ export default function Home() {
           onSelectAgent={setSelectedAgentId}
           onCreateAgent={handleCreateAgent}
           selectedWorkflowName={selectedWorkflow?.name || null}
+          onSaveWorkflow={handleWorkflowNameUpdate}
         />
         <DetailView
           agent={selectedAgent}
