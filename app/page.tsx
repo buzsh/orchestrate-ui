@@ -13,8 +13,20 @@ export default function Home() {
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<string | null>(null);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
 
-  const { data: workflows = [], isLoading: isLoadingWorkflows, error: workflowsError } = useWorkflowsQuery();
-  const { data: agents = [], isLoading: isLoadingAgents, error: agentsError } = useAgentsQuery();
+  const { 
+    data: workflows = [], 
+    isLoading: isLoadingWorkflows,
+    isFetching: isFetchingWorkflows,
+    error: workflowsError 
+  } = useWorkflowsQuery();
+  
+  const { 
+    data: agents = [], 
+    isLoading: isLoadingAgents,
+    isFetching: isFetchingAgents,
+    error: agentsError 
+  } = useAgentsQuery();
+
   const {
     createWorkflow,
     updateWorkflow,
@@ -89,7 +101,7 @@ export default function Home() {
 
   const isMobile = useIsMobile();
 
-  if (isLoadingWorkflows || isLoadingAgents) {
+  if (isLoadingWorkflows || isLoadingAgents || isFetchingWorkflows || isFetchingAgents) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">

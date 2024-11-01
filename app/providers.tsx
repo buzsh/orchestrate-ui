@@ -2,15 +2,15 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
-        staleTime: 1000 * 60, // 1 minute
-        gcTime: 1000 * 60 * 5, // 5 minutes (formerly cacheTime)
-        refetchOnWindowFocus: false,
+        staleTime: 0, // Consider all data stale immediately
+        gcTime: 1000 * 60 * 5, // 5 minutes
+        refetchOnWindowFocus: true,
         refetchOnMount: true,
         refetchOnReconnect: true,
         retry: 2,
@@ -18,6 +18,25 @@ export function Providers({ children }: { children: React.ReactNode }) {
       },
     },
   }));
+
+  // Add this effect to prefetch data
+  useEffect(() => {
+    queryClient.prefetchQuery({
+      queryKey: ['workflows'],
+      queryFn: async () => {
+        const response = await fetch('/api/workflows');
+        return response.json();
+      },
+    });
+
+    queryClient.prefetchQuery({
+      queryKey: ['agents'],
+      queryFn: async () => {
+        const response = await fetch('/api/agents');
+        return response.json();
+      },
+    });
+  }, [queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>

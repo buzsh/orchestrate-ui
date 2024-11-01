@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import TopHeader from "@/components/TopHeader";
 import { Providers } from './providers';
+import { Suspense } from 'react';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -48,7 +49,16 @@ export default function RootLayout({
         <TopHeader />
         <main className="flex-1 overflow-hidden">
           <Providers>
-            {children}
+            <Suspense fallback={
+              <div className="flex h-screen items-center justify-center">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white mx-auto"></div>
+                  <p className="mt-4">Loading...</p>
+                </div>
+              </div>
+            }>
+              {children}
+            </Suspense>
           </Providers>
         </main>
       </body>
