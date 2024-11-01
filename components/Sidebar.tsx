@@ -1,12 +1,9 @@
 import React from "react";
 import { Workflow } from "@/data/types";
 import { 
-  FaCode, 
-  FaBrain, 
-  FaWrench,
-  FaPlus,
-  FaHistory
+  FaBrain
 } from "react-icons/fa";
+import { HiCube, HiWrench, HiClock, HiPlus } from "react-icons/hi2";
 
 interface SidebarProps {
   workflows: Workflow[];
@@ -39,7 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             onClick={onCreateWorkflow}
             className="text-blue-500 hover:text-blue-600 dark:text-blue-400"
           >
-            <FaPlus className="w-5 h-5" />
+            <HiPlus className="w-5 h-5" />
           </button>
         </div>
         <ul className="space-y-1">
@@ -53,7 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     : "text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#2c2c2e]"
                 }`}
               >
-                <FaCode className="w-4 h-4 mr-3" />
+                <HiCube className="w-4 h-4 mr-3" />
                 <span>{workflow.name}</span>
               </button>
             </li>
@@ -68,8 +65,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         <ul className="space-y-1">
           {[
             { icon: FaBrain, name: "Model Settings" },
-            { icon: FaWrench, name: "API Config" },
-            { icon: FaHistory, name: "History" },
+            { icon: HiWrench, name: "API Config" },
+            { icon: HiClock, name: "History" },
           ].map((item, index) => (
             <li key={index}>
               <button className="w-full flex items-center px-2 py-1.5 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#2c2c2e]">
