@@ -64,20 +64,26 @@ const Sidebar: React.FC<SidebarProps> = ({
                         : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 md:hover:bg-gray-200 md:dark:hover:bg-[#2c2c2e]"
                     }`}
                   >
-                    <HiCube className="w-6 h-6 md:w-5 md:h-5 mr-3" />
+                    <HiCube 
+                      className={`w-6 h-6 md:w-5 md:h-5 mr-3 ${
+                        selectedWorkflowId === workflow._id
+                          ? "text-white"
+                          : "text-gray-400 dark:text-gray-500"
+                      }`}
+                    />
                     <span className="flex-1 text-left text-lg md:text-[15px] md:font-medium">{workflow.name}</span>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setWorkflowToDelete(workflow._id);
                       }}
-                      className={`opacity-0 group-hover:opacity-100 
+                      className={`md:opacity-0 md:group-hover:opacity-100 
                         ${selectedWorkflowId === workflow._id 
                           ? "text-white/70 hover:text-white" 
                           : "text-gray-500 hover:text-blue-500 dark:text-gray-400"
                         }`}
                     >
-                      <HiEllipsisVertical className="w-6 h-6 md:w-6 md:h-6" />
+                      <HiEllipsisVertical className="w-6 h-6" />
                     </button>
                   </div>
                 </li>
