@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Agent } from "@/data/types";
 import { HiMagnifyingGlass, HiPlus, HiOutlineCheck, HiTrash } from "react-icons/hi2";
 import { useScrollPosition } from "@/hooks/useScrollPosition";
-import { useDeleteAgent } from "@/hooks/useAgentMutations";
 import ConfirmDialog from "./ConfirmDialog";
+import { useMutations } from '@/lib/hooks/useData';
 
 interface AgentListProps {
   agents: Agent[];
@@ -25,7 +25,7 @@ const AgentList: React.FC<AgentListProps> = ({
   const { scrollRef, handleScroll } = useScrollPosition(`agent-list-${selectedWorkflowName}`);
   const [editedWorkflowName, setEditedWorkflowName] = useState(selectedWorkflowName);
   const [agentToDelete, setAgentToDelete] = useState<string | null>(null);
-  const deleteAgent = useDeleteAgent();
+  const { deleteAgent } = useMutations();
 
   const agentList = Array.isArray(agents) ? agents : [];
 

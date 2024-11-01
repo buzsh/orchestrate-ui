@@ -5,37 +5,22 @@ import Sidebar from "@/components/Sidebar";
 import AgentList from "@/components/AgentList";
 import DetailView from "@/components/DetailView";
 import { Agent, Workflow } from "@/data/types";
-import { useQuery } from '@tanstack/react-query';
-import { useCreateWorkflow, useUpdateWorkflow } from '@/hooks/useWorkflowMutations';
-import { useCreateAgent, useUpdateAgent } from '@/hooks/useAgentMutations';
 import MobileLayout from '@/components/MobileLayout';
 import useIsMobile from '@/hooks/useIsMobile';
+import { useWorkflowsQuery, useAgentsQuery, useMutations } from '@/lib/hooks/useData';
 
 export default function Home() {
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<string | null>(null);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
 
-  // Initialize mutations
-  const createAgent = useCreateAgent();
-  const updateAgent = useUpdateAgent();
-  const createWorkflow = useCreateWorkflow();
-  const updateWorkflow = useUpdateWorkflow();
-
-  const { data: workflows = [], isLoading: isLoadingWorkflows } = useQuery<Workflow[]>({
-    queryKey: ['workflows'],
-    queryFn: async () => {
-      const response = await fetch('/api/workflows');
-      return response.json();
-    },
-  });
-
-  const { data: agents = [], isLoading: isLoadingAgents } = useQuery<Agent[]>({
-    queryKey: ['agents'],
-    queryFn: async () => {
-      const response = await fetch('/api/agents');
-      return response.json();
-    },
-  });
+  const { data: workflows = [], isLoading: isLoadingWorkflows } = useWorkflowsQuery();
+  const { data: agents = [], isLoading: isLoadingAgents } = useAgentsQuery();
+  const {
+    createWorkflow,
+    updateWorkflow,
+    createAgent,
+    updateAgent
+  } = useMutations();
 
   useEffect(() => {
     if (workflows?.length && selectedWorkflowId === null) {

@@ -7,7 +7,7 @@ import Sidebar from './Sidebar';
 import AgentList from './AgentList';
 import DetailView from './DetailView';
 import { Agent, Workflow } from '@/data/types';
-import { useUpdateWorkflow } from '@/hooks/useWorkflowMutations';
+import { useMutations } from '@/lib/hooks/useData';
 
 interface MobileLayoutProps {
   workflows: Workflow[];
@@ -45,6 +45,13 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ workflows, agents }) => {
     }
   };
 
+  const {
+    createWorkflow,
+    updateWorkflow,
+    createAgent,
+    updateAgent
+  } = useMutations();
+
   const handleCreateWorkflow = async () => {
     const newWorkflow: Omit<Workflow, '_id'> = {
       name: `New Workflow ${workflows.length + 1}`,
@@ -56,13 +63,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ workflows, agents }) => {
     };
     
     try {
-      const response = await fetch('/api/workflows', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newWorkflow),
-      });
-      if (!response.ok) throw new Error('Failed to create workflow');
-      const created = await response.json();
+      const created = await createWorkflow.mutateAsync(newWorkflow);
       router.push(`/${created._id}`);
     } catch (error) {
       console.error('Failed to create workflow:', error);
@@ -84,13 +85,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ workflows, agents }) => {
     };
     
     try {
-      const response = await fetch('/api/agents', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newAgent),
-      });
-      if (!response.ok) throw new Error('Failed to create agent');
-      const created = await response.json();
+      const created = await createAgent.mutateAsync(newAgent);
       if (workflowId) {
         router.push(`/${workflowId}/${created._id}`);
       } else {
@@ -103,12 +98,7 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ workflows, agents }) => {
 
   const handleSaveAgent = async (updatedAgent: Agent) => {
     try {
-      const response = await fetch(`/api/agents/${updatedAgent._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedAgent),
-      });
-      if (!response.ok) throw new Error('Failed to update agent');
+      await updateAgent.mutateAsync(updatedAgent);
     } catch (error) {
       console.error('Failed to update agent:', error);
     }
@@ -130,8 +120,6 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ workflows, agents }) => {
 
   // Determine which view to show based on URL params
   const currentView = agentId ? 'detail' : (workflowId ? 'agents' : 'workflows');
-
-  const updateWorkflow = useUpdateWorkflow();
 
   const handleWorkflowNameSave = async (name: string) => {
     if (!selectedWorkflow) return;
