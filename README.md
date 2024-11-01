@@ -18,7 +18,7 @@
 
 # OrchestrateUI
 
-Supercharge your workflow with visual multi-agent orchestration.
+Supercharge your workflow with a visual multi-agent orchestration builder.
 
 <p align="center">
   <picture>
@@ -46,4 +46,4 @@ npm run dev
 ```
 
 ## Stack
-Next.js 15, React 19, App Router, Tailwind
+Next.js 15 (App Router), React 19, Tailwind, Mongoose, MongoDB
