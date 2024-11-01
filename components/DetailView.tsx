@@ -1,144 +1,114 @@
 import React, { useState, useEffect } from "react";
-import { Startup, FundingRound } from "@/data/types";
-import FundingRoundPill from "./FundingRoundPill";
-import ValuationPill from "./ValuationPill";
-import { formatCurrency } from "@/utils/formatCurrency";
-import { HiOutlineLink, HiOutlineShare, HiOutlineGlobeAlt, HiOutlinePlusCircle, HiOutlineFlag } from "react-icons/hi2";
-import FundingHistoryGraph from "./FundingHistoryGraph";
+import { Agent } from "@/data/types";
+import { HiOutlineLink, HiOutlineShare, HiOutlineCheck } from "react-icons/hi2";
 
 interface DetailViewProps {
-  startup: Startup | null;
-  fundingRoundId?: number;
+  agent: Agent | null;
+  onSave: (agent: Agent) => void;
 }
 
-const DetailView: React.FC<DetailViewProps> = ({ startup, fundingRoundId }) => {
-  const [selectedFundingRound, setSelectedFundingRound] = useState<FundingRound | null>(null);
+const DetailView: React.FC<DetailViewProps> = ({ agent, onSave }) => {
+  const [editedAgent, setEditedAgent] = useState<Agent | null>(agent);
 
   useEffect(() => {
-    if (startup) {
-      const sortedFundingRounds = [...startup.fundingRounds].sort((a, b) => {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      });
-      setSelectedFundingRound(sortedFundingRounds[0] || null);
-    }
-  }, [startup]);
+    setEditedAgent(agent);
+  }, [agent]);
 
-  useEffect(() => {
-    if (fundingRoundId && startup) {
-      const foundRound = startup.fundingRounds.find(
-        (round) => round.id === fundingRoundId
-      );
-      if (foundRound) {
-        setSelectedFundingRound(foundRound);
-      }
-    }
-  }, [fundingRoundId, startup]);
-
-  const copyUrl = () => {
-    navigator.clipboard.writeText(window.location.href);
-    // You might want to add a toast or some other feedback here
-  };
-
-  if (!startup) {
+  if (!agent || !editedAgent) {
     return (
-      <div className="flex-1 p-4 bg-white dark:bg-black text-gray-900 dark:text-gray-100">
-        <p>Select a startup to view details.</p>
+      <div className="flex-1 p-4 bg-white dark:bg-black">
+        <p>Select an agent to view details.</p>
       </div>
     );
   }
 
+  const handleSave = () => {
+    if (editedAgent) {
+      onSave(editedAgent);
+    }
+  };
+
   return (
-    <div className="flex-1 overflow-y-auto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
+    <div className="flex-1 overflow-y-auto bg-white dark:bg-black">
       <div className="p-4">
-        <div className="flex justify-between items-start mb-2">
-          <h1 className="hidden md:block text-2xl font-bold">{startup.name}</h1>
-          <div className="flex space-x-4 ml-auto">
-            <button onClick={copyUrl} className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+        <div className="flex justify-between items-start mb-6">
+          <input
+            type="text"
+            value={editedAgent.name}
+            onChange={(e) => setEditedAgent({ ...editedAgent, name: e.target.value })}
+            className="text-2xl font-bold bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 outline-none"
+          />
+          <div className="flex space-x-4">
+            <button onClick={handleSave} className="text-blue-500 hover:text-blue-600">
+              <HiOutlineCheck className="w-6 h-6" />
+            </button>
+            <button className="text-gray-600 hover:text-blue-600">
               <HiOutlineLink className="w-6 h-6" />
             </button>
-            <button className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <button className="text-gray-600 hover:text-blue-600">
               <HiOutlineShare className="w-6 h-6" />
-            </button>
-            <button className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-              <HiOutlineGlobeAlt className="w-6 h-6" />
-            </button>
-            <button className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-              <HiOutlinePlusCircle className="w-6 h-6" />
-            </button>
-            <button className="text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors">
-              <HiOutlineFlag className="w-6 h-6" />
             </button>
           </div>
         </div>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">{startup.description}</p>
-        <h2 className="text-xl font-semibold mb-4">Funding Rounds</h2>
-        <ul className="mb-4 space-y-2">
-          {startup.fundingRounds.map((round) => (
-            <li key={round.id}>
-              <button
-                onClick={() => setSelectedFundingRound(round)}
-                className={`w-full text-left px-3 py-2 rounded-lg flex items-center justify-between ${
-                  selectedFundingRound?.id === round.id
-                    ? "bg-gray-100 dark:bg-gray-800"
-                    : "hover:bg-gray-50 dark:hover:bg-gray-900"
-                }`}
-              >
-                <div className="flex items-center space-x-2">
-                  <FundingRoundPill type={round.type} />
-                  <span className="font-bold">{formatCurrency(round.amountRaised)}</span>
-                </div>
-                {round.valuation && (
-                  <div className="flex items-center">
-                    <span className="text-gray-500 dark:text-gray-400 mr-1">@</span>
-                    <ValuationPill
-                      valuation={round.valuation}
-                      amountRaised={round.amountRaised}
-                      fundingRoundType={round.type}
-                    />
-                  </div>
-                )}
-              </button>
-            </li>
-          ))}
-        </ul>
 
-        {selectedFundingRound && selectedFundingRound.aiSummary && (
+        <div className="space-y-6">
           <div>
-            <h3 className="text-lg font-semibold mb-2">AI Summary</h3>
-            <p className="text-gray-700 dark:text-gray-300">{selectedFundingRound.aiSummary.content}</p>
+            <h3 className="text-lg font-semibold mb-2">Role</h3>
+            <input
+              type="text"
+              value={editedAgent.role}
+              onChange={(e) => setEditedAgent({ ...editedAgent, role: e.target.value })}
+              className="w-full p-2 bg-gray-50 dark:bg-gray-900 rounded-md"
+            />
           </div>
-        )}
 
-        {selectedFundingRound && selectedFundingRound.articles.length > 0 && (
-          <div className="mt-4">
-            <h3 className="text-lg font-semibold mb-2">Articles</h3>
-            {selectedFundingRound.articles.map((article) => (
-              <details key={article.id} className="mb-2">
-                <summary className="cursor-pointer text-gray-800 dark:text-gray-200">{article.title}</summary>
-                <p className="mt-2 text-gray-700 dark:text-gray-300">{article.content}</p>
-              </details>
-            ))}
+          <div>
+            <h3 className="text-lg font-semibold mb-2">System Prompt</h3>
+            <textarea
+              value={editedAgent.systemPrompt}
+              onChange={(e) => setEditedAgent({ ...editedAgent, systemPrompt: e.target.value })}
+              className="w-full h-32 p-2 bg-gray-50 dark:bg-gray-900 rounded-md"
+            />
           </div>
-        )}
 
-        {startup.articles.length > 0 && (
-          <div className="mt-4">
-            <h3 className="text-lg font-semibold mb-2">Other Articles</h3>
-            {startup.articles.map((article) => (
-              <details key={article.id} className="mb-2">
-                <summary className="cursor-pointer text-gray-800 dark:text-gray-200">{article.title}</summary>
-                <p className="mt-2 text-gray-700 dark:text-gray-300">{article.content}</p>
-              </details>
-            ))}
-          </div>
-        )}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Model</h3>
+              <select
+                value={editedAgent.model}
+                onChange={(e) => setEditedAgent({ ...editedAgent, model: e.target.value })}
+                className="w-full p-2 bg-gray-50 dark:bg-gray-900 rounded-md"
+              >
+                <option value="gpt-4">GPT-4</option>
+                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                <option value="claude-3-opus">Claude 3 Opus</option>
+                <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+              </select>
+            </div>
 
-        {startup.fundingRounds.length > 1 && (
-          <div className="mt-8 mb-6">
-            <h2 className="text-xl font-semibold mb-2">Funding History</h2>
-            <FundingHistoryGraph fundingRounds={startup.fundingRounds} />
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Temperature</h3>
+              <input
+                type="number"
+                min="0"
+                max="2"
+                step="0.1"
+                value={editedAgent.temperature}
+                onChange={(e) => setEditedAgent({ ...editedAgent, temperature: parseFloat(e.target.value) })}
+                className="w-full p-2 bg-gray-50 dark:bg-gray-900 rounded-md"
+              />
+            </div>
           </div>
-        )}
+
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Description</h3>
+            <textarea
+              value={editedAgent.description}
+              onChange={(e) => setEditedAgent({ ...editedAgent, description: e.target.value })}
+              className="w-full h-24 p-2 bg-gray-50 dark:bg-gray-900 rounded-md"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,51 +1,46 @@
-export interface Industry {
-  id: number;
-  name: string;
-  startups: Startup[];
-}
-
-export interface Startup {
+export interface Agent {
   id: number;
   name: string;
   description: string;
-  industries: Industry[];
-  fundingRounds: FundingRound[];
-  articles: Article[];
+  role: string;
+  systemPrompt: string;
+  temperature: number;
+  model: string;
+  createdAt: string;
+  updatedAt: string;
+  workflows: Workflow[];
+  conversations: Conversation[];
+}
+
+export interface Workflow {
+  id: number;
+  name: string;
+  description: string;
+  agents: Agent[];
+  steps: WorkflowStep[];
   createdAt: string;
   updatedAt: string;
 }
 
-export type FundingRoundType = 'Pre-Seed' | 'Seed' | 'Series A' | 'Series B' | 'Series C' | 'Series D' | 'Series E' | 'Series F' | 'Series G' | 'Series H';
-
-export interface FundingRound {
+export interface WorkflowStep {
   id: number;
-  startupId: number;
-  type: FundingRoundType;
-  amountRaised: number;
-  valuation?: number;
-  date: string;
-  aiSummary?: AISummary;
-  articles: Article[];
+  agentId: number;
+  order: number;
+  instruction: string;
+  waitForHuman: boolean;
+}
+
+export interface Conversation {
+  id: number;
+  messages: Message[];
+  agentId: number;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface Article {
+export interface Message {
   id: number;
-  title: string;
   content: string;
-  url: string;
-  publicationDate: string;
-  startupId?: number;
-  fundingRoundId?: number;
+  role: 'user' | 'assistant' | 'system';
   createdAt: string;
-  updatedAt: string;
-}
-
-export interface AISummary {
-  id: number;
-  content: string;
-  fundingRoundId: number;
-  createdAt: string;
-  updatedAt: string;
 }
