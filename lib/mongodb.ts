@@ -33,8 +33,6 @@ async function connectToDatabase(): Promise<typeof mongoose> {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
