@@ -9,6 +9,7 @@ import MobileLayout from "@/components/MobileLayout";
 import useIsMobile from "@/hooks/useIsMobile";
 import { Agent, Workflow } from "@/data/types";
 import { useUpdateWorkflow } from '@/hooks/useWorkflowMutations';
+import { useUpdateAgent } from '@/hooks/useAgentMutations';
 
 export default function AgentPage() {
   const params = useParams();
@@ -47,6 +48,7 @@ export default function AgentPage() {
     : null;
 
   const updateWorkflow = useUpdateWorkflow();
+  const updateAgent = useUpdateAgent();
 
   const handleWorkflowNameSave = async (name: string) => {
     if (!selectedWorkflow) return;
@@ -61,6 +63,14 @@ export default function AgentPage() {
       await updateWorkflow.mutateAsync(updatedWorkflow);
     } catch (error) {
       console.error('Failed to update workflow name:', error);
+    }
+  };
+
+  const handleSaveAgent = async (updatedAgent: Agent) => {
+    try {
+      await updateAgent.mutateAsync(updatedAgent);
+    } catch (error) {
+      console.error('Failed to update agent:', error);
     }
   };
 
@@ -102,10 +112,7 @@ export default function AgentPage() {
       />
       <DetailView 
         agent={selectedAgent}
-        onSave={(updatedAgent) => {
-          // Implement agent update
-          console.log('Save agent', updatedAgent);
-        }}
+        onSave={handleSaveAgent}
       />
     </div>
   );

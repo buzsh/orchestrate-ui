@@ -4,7 +4,7 @@ import { HiOutlineLink, HiOutlineShare, HiOutlineCheck } from "react-icons/hi2";
 
 interface DetailViewProps {
   agent: Agent | null;
-  onSave: (agent: Agent) => void;
+  onSave: (agent: Agent) => Promise<void>;
 }
 
 const DetailView: React.FC<DetailViewProps> = ({ agent, onSave }) => {
@@ -19,7 +19,7 @@ const DetailView: React.FC<DetailViewProps> = ({ agent, onSave }) => {
     if (editedAgent) {
       setIsSaving(true);
       try {
-        onSave(editedAgent);
+        await onSave(editedAgent);
       } catch (error) {
         console.error('Failed to update agent:', error);
       } finally {

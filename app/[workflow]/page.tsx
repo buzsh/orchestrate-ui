@@ -8,6 +8,7 @@ import DetailView from "@/components/DetailView";
 import MobileLayout from "@/components/MobileLayout";
 import useIsMobile from "@/hooks/useIsMobile";
 import { useCreateWorkflow, useUpdateWorkflow } from '@/hooks/useWorkflowMutations';
+import { useUpdateAgent } from '@/hooks/useAgentMutations';
 import { Agent, Workflow } from "@/data/types";
 
 export default function WorkflowPage() {
@@ -16,6 +17,7 @@ export default function WorkflowPage() {
   const isMobile = useIsMobile();
   const createWorkflow = useCreateWorkflow();
   const updateWorkflow = useUpdateWorkflow();
+  const updateAgent = useUpdateAgent();
 
   const { data: workflows = [], isLoading: isLoadingWorkflows } = useQuery<Workflow[]>({
     queryKey: ['workflows'],
@@ -57,6 +59,14 @@ export default function WorkflowPage() {
       await updateWorkflow.mutateAsync(updatedWorkflow);
     } catch (error) {
       console.error('Failed to update workflow name:', error);
+    }
+  };
+
+  const handleSaveAgent = async (agent: Agent): Promise<void> => {
+    try {
+      await updateAgent.mutateAsync(agent);
+    } catch (error) {
+      console.error('Failed to update agent:', error);
     }
   };
 
@@ -102,7 +112,7 @@ export default function WorkflowPage() {
       />
       <DetailView 
         agent={null}
-        onSave={() => {}}
+        onSave={handleSaveAgent}
       />
     </div>
   );

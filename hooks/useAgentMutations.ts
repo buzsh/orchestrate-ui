@@ -20,6 +20,7 @@ export function useCreateAgent() {
 
 export function useUpdateAgent() {
   const queryClient = useQueryClient();
+  
   return useMutation({
     mutationFn: async (agent: Agent) => {
       const response = await fetch(`/api/agents/${agent._id}`, {
@@ -27,6 +28,11 @@ export function useUpdateAgent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(agent),
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update agent');
+      }
+      
       return response.json();
     },
     onSuccess: () => {
