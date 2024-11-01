@@ -158,9 +158,9 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ workflows, agents }) => {
           </button>
         )}
         <h1 className="text-xl font-semibold">
-          {currentView === 'workflows' && 'Workflows'}
-          {currentView === 'agents' && (selectedWorkflow?.name || 'All Agents')}
-          {currentView === 'detail' && selectedAgent?.name}
+          {currentView === 'workflows' && 'Dashboard'}
+          {currentView === 'agents' && 'Workflows'}
+          {currentView === 'detail' && 'Agents'}
         </h1>
       </header>
 
