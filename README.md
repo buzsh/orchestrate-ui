@@ -1,8 +1,8 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" width="1380" alt="Dark Cover" srcset="https://github.com/user-attachments/assets/25ffb269-e081-417e-b19c-18c9d4bdd764">
-    <source media="(prefers-color-scheme: light)" width="1380" alt="Light Cover" srcset="https://github.com/user-attachments/assets/8c06f01f-95bc-4799-821c-07c018066f0e">
-    <img width="1380" alt="Cover" src="https://github.com/user-attachments/assets/8c06f01f-95bc-4799-821c-07c018066f0e">
+    <source media="(prefers-color-scheme: dark)" width="1380" alt="Dark Cover" srcset="https://github.com/user-attachments/assets/6a36d08f-84dd-4333-82cb-1a4feffdf5bd">
+    <source media="(prefers-color-scheme: light)" width="1380" alt="Light Cover" srcset="https://github.com/user-attachments/assets/52834757-718d-4845-970b-6a6076aff70b">
+    <img width="1380" alt="Cover" src="https://github.com/user-attachments/assets/52834757-718d-4845-970b-6a6076aff70b">
   </picture>
 </p>
 
