@@ -48,42 +48,62 @@ const AgentList: React.FC<AgentListProps> = ({
           </button>
         </div>
 
-        <ul className="space-y-1 overflow-y-auto pb-20">
-          {agents.map((agent) => (
-            <li key={agent.id}>
-              <button
-                onClick={() => onSelectAgent(agent.id)}
-                className={`w-full text-left p-3 rounded-lg ${
-                  selectedAgentId === agent.id
-                    ? "bg-blue-100 dark:bg-blue-900"
-                    : "hover:bg-gray-100 dark:hover:bg-[#2c2c2e]"
-                }`}
-              >
-                <div className="flex flex-col">
-                  <div className="flex justify-between items-center">
-                    <span className="text-[17px] font-semibold dark:text-white">
-                      {agent.name}
-                    </span>
-                    <span className="text-[14px] text-gray-400">
-                      {agent.model}
-                    </span>
+        <div className="relative pt-2 pb-2">
+          <ul className="space-y-6 relative z-10">
+            {agents.map((agent, index) => (
+              <li key={agent.id} className="relative">
+                {index !== 0 && (
+                  <div className="absolute left-1/2 -top-[24px] h-[20px] w-0.5 bg-gradient-to-b from-blue-200 to-blue-400 dark:from-blue-800 dark:to-blue-600 transform -translate-x-1/2 z-0" />
+                )}
+                
+                {index !== agents.length - 1 && (
+                  <div className="absolute left-1/2 -bottom-[24px] h-[20px] w-0.5 bg-gradient-to-b from-blue-400 to-blue-200 dark:from-blue-600 dark:to-blue-800 transform -translate-x-1/2 z-0" />
+                )}
+                
+                <button
+                  onClick={() => onSelectAgent(agent.id)}
+                  className={`
+                    w-full text-left p-4 rounded-lg
+                    relative z-10
+                    transition-all duration-200 ease-in-out
+                    bg-white dark:bg-black
+                    border-2 border-blue-400/30 dark:border-blue-600/30
+                    shadow-[0_0_15px_rgba(59,130,246,0.2)] dark:shadow-[0_0_15px_rgba(37,99,235,0.2)]
+                    hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] dark:hover:shadow-[0_0_20px_rgba(37,99,235,0.3)]
+                    hover:border-blue-400/50 dark:hover:border-blue-600/50
+                    ${
+                      selectedAgentId === agent.id
+                        ? "bg-blue-50 dark:bg-blue-900/30 border-blue-400 dark:border-blue-600 shadow-[0_0_25px_rgba(59,130,246,0.4)] dark:shadow-[0_0_25px_rgba(37,99,235,0.4)]"
+                        : ""
+                    }
+                  `}
+                >
+                  <div className="flex flex-col">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[17px] font-semibold text-gray-900 dark:text-white">
+                        {agent.name}
+                      </span>
+                      <span className="text-[14px] text-gray-500 dark:text-gray-400">
+                        {agent.model}
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <span className="text-[14px] text-gray-600 dark:text-gray-300">
+                        {agent.role}
+                      </span>
+                      <span className="text-[14px] text-gray-500 dark:text-gray-400">
+                        T: {agent.temperature}
+                      </span>
+                    </div>
+                    <p className="text-[14px] text-gray-500 dark:text-gray-400 line-clamp-2 mt-1">
+                      {agent.description}
+                    </p>
                   </div>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <span className="text-[14px] text-gray-500 dark:text-gray-400">
-                      {agent.role}
-                    </span>
-                    <span className="text-[14px] text-gray-400">
-                      T: {agent.temperature}
-                    </span>
-                  </div>
-                  <p className="text-[14px] text-gray-500 dark:text-gray-400 line-clamp-2 mt-1">
-                    {agent.description}
-                  </p>
-                </div>
-              </button>
-            </li>
-          ))}
-        </ul>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );
