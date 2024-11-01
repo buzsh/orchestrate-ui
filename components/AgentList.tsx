@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Agent } from "@/data/types";
-import { HiMagnifyingGlass, HiPlus } from "react-icons/hi2";
+import { HiMagnifyingGlass, HiPlus, HiOutlineCheck } from "react-icons/hi2";
 import { useScrollPosition } from "@/hooks/useScrollPosition";
 
 interface AgentListProps {
@@ -9,6 +9,7 @@ interface AgentListProps {
   onSelectAgent: (agentId: number) => void;
   onCreateAgent: () => void;
   selectedWorkflowName: string | null;
+  onSaveWorkflow?: (name: string) => void;
 }
 
 const AgentList: React.FC<AgentListProps> = ({
@@ -17,8 +18,20 @@ const AgentList: React.FC<AgentListProps> = ({
   onSelectAgent,
   onCreateAgent,
   selectedWorkflowName,
+  onSaveWorkflow,
 }) => {
   const { scrollRef, handleScroll } = useScrollPosition(`agent-list-${selectedWorkflowName}`);
+  const [editedWorkflowName, setEditedWorkflowName] = useState(selectedWorkflowName);
+
+  useEffect(() => {
+    setEditedWorkflowName(selectedWorkflowName);
+  }, [selectedWorkflowName]);
+
+  const handleWorkflowNameSave = () => {
+    if (editedWorkflowName && onSaveWorkflow) {
+      onSaveWorkflow(editedWorkflowName);
+    }
+  };
 
   return (
     <div 
@@ -29,6 +42,25 @@ const AgentList: React.FC<AgentListProps> = ({
       }`}
     >
       <div className="p-4 flex-1 min-h-0">
+        {selectedWorkflowName && (
+          <div className="flex justify-between items-start mb-6">
+            <input
+              type="text"
+              value={editedWorkflowName || ''}
+              onChange={(e) => setEditedWorkflowName(e.target.value)}
+              className="text-2xl font-bold bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 outline-none"
+            />
+            <div className="flex space-x-4">
+              <button 
+                onClick={handleWorkflowNameSave} 
+                className="text-blue-500 hover:text-blue-600"
+              >
+                <HiOutlineCheck className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-between items-center mb-4">
           <div className="relative flex-1">
             <div className="relative flex items-center">
