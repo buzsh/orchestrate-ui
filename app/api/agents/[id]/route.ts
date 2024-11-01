@@ -2,17 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import { Agent } from '@/models/Agent';
 
-interface RouteParams {
+type Props = {
   params: {
     id: string;
   };
-}
+};
 
 export async function PUT(
   request: NextRequest,
-  { params }: RouteParams
+  props: Props
 ) {
-  const id = params.id;
+  const id = props.params.id;
   
   try {
     await connectToDatabase();
@@ -43,9 +43,9 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: RouteParams
+  props: Props
 ) {
-  const id = params.id;
+  const id = props.params.id;
   
   try {
     await connectToDatabase();
