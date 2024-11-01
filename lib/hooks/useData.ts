@@ -6,9 +6,24 @@ export function useWorkflowsQuery() {
   return useQuery<Workflow[]>({
     queryKey: ['workflows'],
     queryFn: async () => {
-      const response = await fetch('/api/workflows');
-      return response.json();
-    }
+      const response = await fetch('/api/workflows', {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if ('error' in data) {
+        throw new Error(data.error);
+      }
+      return data;
+    },
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    initialData: [],
   });
 }
 
@@ -16,9 +31,24 @@ export function useAgentsQuery() {
   return useQuery<Agent[]>({
     queryKey: ['agents'],
     queryFn: async () => {
-      const response = await fetch('/api/agents');
-      return response.json();
-    }
+      const response = await fetch('/api/agents', {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if ('error' in data) {
+        throw new Error(data.error);
+      }
+      return data;
+    },
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    initialData: [],
   });
 }
 
