@@ -9,10 +9,24 @@ interface DetailViewProps {
 
 const DetailView: React.FC<DetailViewProps> = ({ agent, onSave }) => {
   const [editedAgent, setEditedAgent] = useState<Agent | null>(agent);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     setEditedAgent(agent);
   }, [agent]);
+
+  const handleSave = async () => {
+    if (editedAgent) {
+      setIsSaving(true);
+      try {
+        onSave(editedAgent);
+      } catch (error) {
+        console.error('Failed to update agent:', error);
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  };
 
   if (!agent || !editedAgent) {
     return (
@@ -21,12 +35,6 @@ const DetailView: React.FC<DetailViewProps> = ({ agent, onSave }) => {
       </div>
     );
   }
-
-  const handleSave = () => {
-    if (editedAgent) {
-      onSave(editedAgent);
-    }
-  };
 
   return (
     <div className="flex-1 overflow-y-auto bg-white dark:bg-black">
@@ -39,7 +47,11 @@ const DetailView: React.FC<DetailViewProps> = ({ agent, onSave }) => {
             className="text-2xl font-bold bg-transparent border-b border-transparent hover:border-gray-300 focus:border-blue-500 outline-none"
           />
           <div className="flex space-x-4">
-            <button onClick={handleSave} className="text-blue-500 hover:text-blue-600">
+            <button 
+              onClick={handleSave} 
+              disabled={isSaving}
+              className={`text-blue-500 hover:text-blue-600 ${isSaving ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
               <HiOutlineCheck className="w-6 h-6" />
             </button>
             <button className="text-gray-600 hover:text-blue-600">

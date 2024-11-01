@@ -1,35 +1,60 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
+import { useQuery } from '@tanstack/react-query';
 import Sidebar from "@/components/Sidebar";
 import AgentList from "@/components/AgentList";
 import DetailView from "@/components/DetailView";
 import MobileLayout from "@/components/MobileLayout";
-import { sampleWorkflows, sampleAgents } from "@/data/sampleAgentData";
 import useIsMobile from "@/hooks/useIsMobile";
+import { useCreateWorkflow } from '@/hooks/useWorkflowMutations';
+import { Agent, Workflow } from "@/data/types";
 
 export default function WorkflowPage() {
   const params = useParams();
   const router = useRouter();
   const isMobile = useIsMobile();
+  const createWorkflow = useCreateWorkflow();
+
+  const { data: workflows = [], isLoading: isLoadingWorkflows } = useQuery({
+    queryKey: ['workflows'],
+    queryFn: async () => {
+      const response = await fetch('/api/workflows');
+      return response.json();
+    },
+  });
+
+  const { data: agents = [], isLoading: isLoadingAgents } = useQuery({
+    queryKey: ['agents'],
+    queryFn: async () => {
+      const response = await fetch('/api/agents');
+      return response.json();
+    },
+  });
 
   const workflowId = params.workflow ? parseInt(params.workflow as string) : null;
   const selectedWorkflow = workflowId 
-    ? sampleWorkflows.find(w => w.id === workflowId)
+    ? workflows.find((w: Workflow) => w.id === workflowId)
     : null;
   
   const filteredAgents = workflowId
-    ? sampleAgents.filter(agent => agent.workflows.some(w => w.id === workflowId))
-    : sampleAgents;
+    ? agents.filter((agent: Agent) => 
+        agent.workflows.some((w: Workflow) => w.id === workflowId)
+      )
+    : agents;
 
   if (isMobile) {
-    return <MobileLayout workflows={sampleWorkflows} agents={sampleAgents} />;
+    return <MobileLayout workflows={workflows} agents={agents} />;
+  }
+
+  if (isLoadingWorkflows || isLoadingAgents) {
+    return <div>Loading...</div>;
   }
 
   return (
     <div className="flex h-full">
       <Sidebar
-        workflows={sampleWorkflows}
+        workflows={workflows}
         selectedWorkflowId={workflowId}
         onSelectWorkflow={(newWorkflowId) => {
           if (newWorkflowId) {
@@ -38,25 +63,29 @@ export default function WorkflowPage() {
             router.push('/');
           }
         }}
-        onCreateWorkflow={() => {
-          // Implement workflow creation
-          console.log('Create workflow');
+        onCreateWorkflow={async () => {
+          const newWorkflow = {
+            name: `New Workflow ${workflows.length + 1}`,
+            description: "A new workflow",
+            agents: [],
+            steps: [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          await createWorkflow.mutateAsync(newWorkflow);
         }}
       />
       <AgentList
         agents={filteredAgents}
         selectedAgentId={null}
         onSelectAgent={(agentId) => router.push(`/${workflowId}/${agentId}`)}
-        onCreateAgent={() => {
-          // Implement agent creation
-          console.log('Create agent');
-        }}
+        onCreateAgent={() => {/* implement */}}
         selectedWorkflowName={selectedWorkflow?.name || null}
       />
       <DetailView 
         agent={null}
-        onSave={() => {}} // Not needed in this view
+        onSave={() => {}}
       />
     </div>
   );
-} 
+}
