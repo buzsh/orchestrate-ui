@@ -1,36 +1,22 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useQuery } from '@tanstack/react-query';
 import Sidebar from "@/components/Sidebar";
 import AgentList from "@/components/AgentList";
 import DetailView from "@/components/DetailView";
 import MobileLayout from "@/components/MobileLayout";
 import useIsMobile from "@/hooks/useIsMobile";
+import { useWorkflowsQuery, useAgentsQuery, useMutations } from '@/lib/hooks/useData';
 import { Agent, Workflow } from "@/data/types";
-import { useUpdateWorkflow } from '@/hooks/useWorkflowMutations';
-import { useUpdateAgent } from '@/hooks/useAgentMutations';
 
 export default function AgentPage() {
   const params = useParams();
   const router = useRouter();
   const isMobile = useIsMobile();
 
-  const { data: workflows = [], isLoading: isLoadingWorkflows } = useQuery<Workflow[]>({
-    queryKey: ['workflows'],
-    queryFn: async () => {
-      const response = await fetch('/api/workflows');
-      return response.json();
-    },
-  });
-
-  const { data: agents = [], isLoading: isLoadingAgents } = useQuery<Agent[]>({
-    queryKey: ['agents'],
-    queryFn: async () => {
-      const response = await fetch('/api/agents');
-      return response.json();
-    },
-  });
+  const { data: workflows = [], isLoading: isLoadingWorkflows } = useWorkflowsQuery();
+  const { data: agents = [], isLoading: isLoadingAgents } = useAgentsQuery();
+  const { updateWorkflow, updateAgent } = useMutations();
 
   const workflowId = params.workflow as string || null;
   const agentId = params.agent as string || null;
@@ -40,15 +26,12 @@ export default function AgentPage() {
     : null;
   
   const filteredAgents = workflowId
-    ? agents.filter(agent => agent.workflows.some(w => w._id === workflowId))
+    ? agents
     : agents;
     
   const selectedAgent = agentId
     ? agents.find(a => a._id === agentId) || null
     : null;
-
-  const updateWorkflow = useUpdateWorkflow();
-  const updateAgent = useUpdateAgent();
 
   const handleWorkflowNameSave = async (name: string) => {
     if (!selectedWorkflow) return;

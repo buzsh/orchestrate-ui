@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Workflow } from "@/data/types";
 import { FaBrain } from "react-icons/fa";
 import { HiCube, HiWrench, HiClock, HiPlus, HiEllipsisVertical } from "react-icons/hi2";
-import { useDeleteWorkflow } from "@/hooks/useWorkflowMutations";
 import ConfirmDialog from "./ConfirmDialog";
+import { useMutations } from '@/lib/hooks/useData';
 
 interface SidebarProps {
   workflows: Workflow[];
@@ -19,7 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onCreateWorkflow,
 }) => {
   const [workflowToDelete, setWorkflowToDelete] = useState<string | null>(null);
-  const deleteWorkflow = useDeleteWorkflow();
+  const { deleteWorkflow } = useMutations();
 
   const handleDeleteWorkflow = async () => {
     if (workflowToDelete) {
