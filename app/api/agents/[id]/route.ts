@@ -4,10 +4,11 @@ import { Agent } from '@/models/Agent';
 
 export async function PUT(
   req: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
+  const id = params.id;
+  
   try {
-    const id = await context.params.id;
     await connectToDatabase();
     const data = await req.json();
     
@@ -36,10 +37,11 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
+  const id = params.id;
+  
   try {
-    const id = await context.params.id;
     await connectToDatabase();
     
     const agent = await Agent.findByIdAndDelete(id);
@@ -59,4 +61,4 @@ export async function DELETE(
       { status: 500 }
     );
   }
-} 
+}
