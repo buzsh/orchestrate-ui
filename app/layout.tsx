@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import TopHeader, { TickerItem } from "@/components/TopHeader";
-import { startups } from "@/data/sampleData";
+import TopHeader from "@/components/TopHeader";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -16,13 +15,13 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "MarketRecon",
+  title: "OrchestrateUI",
   description: "AI-driven market research and intelligent idea generation",
   openGraph: {
-    title: "MarketRecon",
+    title: "OrchestrateUI",
     description: "AI-driven market research and intelligent idea generation",
     url: "https://recon-mauve.vercel.app",
-    siteName: "MarketRecon",
+    siteName: "OrchestrateUI",
     images: [
       {
         url: "https://recon-mauve.vercel.app/og-image.jpg",
@@ -35,39 +34,17 @@ export const metadata: Metadata = {
   },
 };
 
-const prepareTickerItems = (): TickerItem[] => {
-  return startups
-    .map(startup => {
-      const latestRound = startup.fundingRounds[0];
-      if (latestRound) {
-        return {
-          id: startup.id,
-          name: startup.name,
-          latestFundingRound: {
-            type: latestRound.type,
-            amountRaised: latestRound.amountRaised,
-            valuation: latestRound.valuation
-          }
-        };
-      }
-      return null;
-    })
-    .filter((item): item is TickerItem => item !== null);
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const tickerItems = prepareTickerItems();
-
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen flex flex-col`}
       >
-        <TopHeader tickerItems={tickerItems} />
+        <TopHeader />
         <main className="flex-1 overflow-hidden">
           {children}
         </main>
