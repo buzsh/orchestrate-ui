@@ -2,24 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import { Agent } from '@/models/Agent';
 
-type Props = {
-  params: {
-    id: string;
-  };
-};
-
 export async function PUT(
   request: NextRequest,
-  props: Props
+  context: { params: { id: string } }
 ) {
-  const id = props.params.id;
-  
   try {
     await connectToDatabase();
     const data = await request.json();
     
     const agent = await Agent.findByIdAndUpdate(
-      id,
+      context.params.id,
       { ...data, updatedAt: new Date().toISOString() },
       { new: true }
     ).populate('workflows');
@@ -43,14 +35,12 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  props: Props
+  context: { params: { id: string } }
 ) {
-  const id = props.params.id;
-  
   try {
     await connectToDatabase();
     
-    const agent = await Agent.findByIdAndDelete(id);
+    const agent = await Agent.findByIdAndDelete(context.params.id);
     
     if (!agent) {
       return NextResponse.json(
