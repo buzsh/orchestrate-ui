@@ -4,15 +4,15 @@ import { Agent } from '@/models/Agent';
 
 export async function PUT(
   request: NextRequest,
-  context: Promise<{ params: Record<string, string> }>
+  context: { params: Promise<Record<string, string>> }
 ) {
   try {
     await connectToDatabase();
     const data = await request.json();
-    const { params } = await context;
+    const { id } = await context.params;
     
     const agent = await Agent.findByIdAndUpdate(
-      params.id,
+      id,
       { ...data, updatedAt: new Date().toISOString() },
       { new: true }
     ).populate('workflows');
@@ -36,13 +36,13 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  context: Promise<{ params: Record<string, string> }>
+  context: { params: Promise<Record<string, string>> }
 ) {
   try {
     await connectToDatabase();
-    const { params } = await context;
+    const { id } = await context.params;
     
-    const agent = await Agent.findByIdAndDelete(params.id);
+    const agent = await Agent.findByIdAndDelete(id);
     
     if (!agent) {
       return NextResponse.json(
