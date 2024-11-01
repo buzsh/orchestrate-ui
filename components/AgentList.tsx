@@ -7,8 +7,8 @@ import ConfirmDialog from "./ConfirmDialog";
 
 interface AgentListProps {
   agents: Agent[];
-  selectedAgentId: number | null;
-  onSelectAgent: (agentId: number) => void;
+  selectedAgentId: string | null;
+  onSelectAgent: (agentId: string) => void;
   onCreateAgent: () => void;
   selectedWorkflowName: string | null;
   onSaveWorkflow?: (name: string) => void;
@@ -24,7 +24,7 @@ const AgentList: React.FC<AgentListProps> = ({
 }) => {
   const { scrollRef, handleScroll } = useScrollPosition(`agent-list-${selectedWorkflowName}`);
   const [editedWorkflowName, setEditedWorkflowName] = useState(selectedWorkflowName);
-  const [agentToDelete, setAgentToDelete] = useState<number | null>(null);
+  const [agentToDelete, setAgentToDelete] = useState<string | null>(null);
   const deleteAgent = useDeleteAgent();
 
   const agentList = Array.isArray(agents) ? agents : [];
@@ -100,7 +100,7 @@ const AgentList: React.FC<AgentListProps> = ({
         <div className="relative pt-2 pb-2">
           <ul className="space-y-6 relative z-10">
             {agentList.map((agent: Agent, index: number) => (
-              <li key={agent.id} className="relative group">
+              <li key={agent._id} className="relative group">
                 {index !== 0 && (
                   <div className="absolute left-1/2 -top-[24px] h-[20px] w-0.5 bg-gradient-to-b from-blue-200 to-blue-400 dark:from-blue-800 dark:to-blue-600 transform -translate-x-1/2 z-0" />
                 )}
@@ -111,7 +111,7 @@ const AgentList: React.FC<AgentListProps> = ({
                 
                 <div className="relative">
                   <button
-                    onClick={() => onSelectAgent(agent.id)}
+                    onClick={() => onSelectAgent(agent._id)}
                     className={`
                       w-full text-left p-4 rounded-lg
                       relative z-10
@@ -122,7 +122,7 @@ const AgentList: React.FC<AgentListProps> = ({
                       hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] dark:hover:shadow-[0_0_20px_rgba(37,99,235,0.3)]
                       hover:border-blue-400/50 dark:hover:border-blue-600/50
                       ${
-                        selectedAgentId === agent.id
+                        selectedAgentId === agent._id
                           ? "bg-blue-50 dark:bg-blue-900/30 border-blue-400 dark:border-blue-600 shadow-[0_0_25px_rgba(59,130,246,0.4)] dark:shadow-[0_0_25px_rgba(37,99,235,0.4)]"
                           : ""
                       }
@@ -140,7 +140,7 @@ const AgentList: React.FC<AgentListProps> = ({
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              setAgentToDelete(agent.id);
+                              setAgentToDelete(agent._id);
                             }}
                             className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-500 dark:text-gray-400 ml-2"
                           >

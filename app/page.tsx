@@ -10,8 +10,8 @@ import { useCreateWorkflow, useUpdateWorkflow } from '@/hooks/useWorkflowMutatio
 import { useCreateAgent, useUpdateAgent } from '@/hooks/useAgentMutations';
 
 export default function Home() {
-  const [selectedWorkflowId, setSelectedWorkflowId] = useState<number | null>(null);
-  const [selectedAgentId, setSelectedAgentId] = useState<number | null>(null);
+  const [selectedWorkflowId, setSelectedWorkflowId] = useState<string | null>(null);
+  const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
 
   // Initialize mutations
   const createAgent = useCreateAgent();
@@ -37,12 +37,11 @@ export default function Home() {
 
   useEffect(() => {
     if (workflows?.length && selectedWorkflowId === null) {
-      setSelectedWorkflowId(workflows[0].id);
+      setSelectedWorkflowId(workflows[0]._id);
     }
   }, [workflows, selectedWorkflowId]);
-
   const handleCreateWorkflow = async () => {
-    const newWorkflow: Omit<Workflow, 'id'> = {
+    const newWorkflow: Omit<Workflow, '_id'> = {
       name: `New Workflow ${workflows.length + 1}`,
       description: "A new workflow",
       agents: [],
@@ -55,14 +54,14 @@ export default function Home() {
   };
 
   const handleCreateAgent = async () => {
-    const newAgent: Omit<Agent, 'id'> = {
+    const newAgent: Omit<Agent, '_id'> = {
       name: `New Agent ${agents.length + 1}`,
       description: "A new AI agent",
       role: "assistant",
       systemPrompt: "You are a helpful AI assistant.",
       temperature: 0.7,
       model: "gpt-4",
-      workflows: selectedWorkflowId ? [workflows.find((w: Workflow) => w.id === selectedWorkflowId)!] : [],
+      workflows: selectedWorkflowId ? [workflows.find((w: Workflow) => w._id === selectedWorkflowId)!] : [],
       conversations: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -88,17 +87,17 @@ export default function Home() {
   };
 
   const selectedWorkflow = selectedWorkflowId 
-    ? workflows.find((w: Workflow) => w.id === selectedWorkflowId)
+    ? workflows.find((w: Workflow) => w._id === selectedWorkflowId)
     : null;
 
   const filteredAgents = selectedWorkflow
     ? agents.filter((agent: Agent) => 
-        agent.workflows.some((w: Workflow) => w.id === selectedWorkflowId)
+        agent.workflows.some((w: Workflow) => w._id === selectedWorkflowId)
       )
     : agents;
 
   const selectedAgent = selectedAgentId 
-    ? agents.find((a: Agent) => a.id === selectedAgentId) || null
+    ? agents.find((a: Agent) => a._id === selectedAgentId) || null
     : null;
 
   if (isLoadingWorkflows || isLoadingAgents) {

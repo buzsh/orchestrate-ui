@@ -7,8 +7,8 @@ import ConfirmDialog from "./ConfirmDialog";
 
 interface SidebarProps {
   workflows: Workflow[];
-  selectedWorkflowId: number | null;
-  onSelectWorkflow: (workflowId: number | null) => void;
+  selectedWorkflowId: string | null;
+  onSelectWorkflow: (workflowId: string | null) => void;
   onCreateWorkflow: () => void;
 }
 
@@ -18,7 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onSelectWorkflow,
   onCreateWorkflow,
 }) => {
-  const [workflowToDelete, setWorkflowToDelete] = useState<number | null>(null);
+  const [workflowToDelete, setWorkflowToDelete] = useState<string | null>(null);
   const deleteWorkflow = useDeleteWorkflow();
 
   const handleDeleteWorkflow = async () => {
@@ -54,11 +54,11 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <ul className="space-y-1">
             {workflowList.map((workflow: Workflow) => (
-              <li key={workflow.id} className="group relative">
+              <li key={workflow._id} className="group relative">
                 <div
-                  onClick={() => onSelectWorkflow(workflow.id)}
+                  onClick={() => onSelectWorkflow(workflow._id)}
                   className={`w-full flex items-center px-2 py-1.5 rounded-md cursor-pointer ${
-                    selectedWorkflowId === workflow.id
+                    selectedWorkflowId === workflow._id
                       ? "bg-blue-500 dark:bg-blue-600 text-white"
                       : "text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-[#2c2c2e]"
                   }`}
@@ -68,7 +68,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      setWorkflowToDelete(workflow.id);
+                      setWorkflowToDelete(workflow._id);
                     }}
                     className="opacity-0 group-hover:opacity-100 text-gray-500 hover:text-red-500 dark:text-gray-400"
                   >

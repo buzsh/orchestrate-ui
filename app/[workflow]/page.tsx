@@ -7,7 +7,7 @@ import AgentList from "@/components/AgentList";
 import DetailView from "@/components/DetailView";
 import MobileLayout from "@/components/MobileLayout";
 import useIsMobile from "@/hooks/useIsMobile";
-import { useCreateWorkflow } from '@/hooks/useWorkflowMutations';
+import { useCreateWorkflow, useUpdateWorkflow } from '@/hooks/useWorkflowMutations';
 import { Agent, Workflow } from "@/data/types";
 
 export default function WorkflowPage() {
@@ -15,8 +15,9 @@ export default function WorkflowPage() {
   const router = useRouter();
   const isMobile = useIsMobile();
   const createWorkflow = useCreateWorkflow();
+  const updateWorkflow = useUpdateWorkflow();
 
-  const { data: workflows = [], isLoading: isLoadingWorkflows } = useQuery({
+  const { data: workflows = [], isLoading: isLoadingWorkflows } = useQuery<Workflow[]>({
     queryKey: ['workflows'],
     queryFn: async () => {
       const response = await fetch('/api/workflows');
@@ -24,7 +25,7 @@ export default function WorkflowPage() {
     },
   });
 
-  const { data: agents = [], isLoading: isLoadingAgents } = useQuery({
+  const { data: agents = [], isLoading: isLoadingAgents } = useQuery<Agent[]>({
     queryKey: ['agents'],
     queryFn: async () => {
       const response = await fetch('/api/agents');
@@ -32,16 +33,32 @@ export default function WorkflowPage() {
     },
   });
 
-  const workflowId = params.workflow ? parseInt(params.workflow as string) : null;
+  const workflowId = params.workflow as string || null;
   const selectedWorkflow = workflowId 
-    ? workflows.find((w: Workflow) => w.id === workflowId)
+    ? workflows.find((w: Workflow) => w._id === workflowId)
     : null;
   
   const filteredAgents = workflowId
     ? agents.filter((agent: Agent) => 
-        agent.workflows.some((w: Workflow) => w.id === workflowId)
+        agent.workflows.some((w: Workflow) => w._id === workflowId)
       )
     : agents;
+
+  const handleWorkflowNameSave = async (name: string) => {
+    if (!selectedWorkflow) return;
+    
+    const updatedWorkflow: Workflow = {
+      ...selectedWorkflow,
+      name,
+      updatedAt: new Date().toISOString(),
+    };
+    
+    try {
+      await updateWorkflow.mutateAsync(updatedWorkflow);
+    } catch (error) {
+      console.error('Failed to update workflow name:', error);
+    }
+  };
 
   if (isMobile) {
     return <MobileLayout workflows={workflows} agents={agents} />;
@@ -64,7 +81,7 @@ export default function WorkflowPage() {
           }
         }}
         onCreateWorkflow={async () => {
-          const newWorkflow = {
+          const newWorkflow: Omit<Workflow, '_id'> = {
             name: `New Workflow ${workflows.length + 1}`,
             description: "A new workflow",
             agents: [],
@@ -81,6 +98,7 @@ export default function WorkflowPage() {
         onSelectAgent={(agentId) => router.push(`/${workflowId}/${agentId}`)}
         onCreateAgent={() => {/* implement */}}
         selectedWorkflowName={selectedWorkflow?.name || null}
+        onSaveWorkflow={handleWorkflowNameSave}
       />
       <DetailView 
         agent={null}

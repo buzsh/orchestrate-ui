@@ -4,7 +4,7 @@ import type { Workflow } from '@/data/types';
 async function fetchWorkflows(): Promise<Workflow[]> {
   const response = await fetch('/api/workflows');
   if (!response.ok) {
-    throw new Error('Network response was not ok');
+    throw new Error('Failed to fetch workflows');
   }
   return response.json();
 }
@@ -19,6 +19,7 @@ export function useWorkflows() {
   } = useQuery({
     queryKey: ['workflows'],
     queryFn: fetchWorkflows,
+    staleTime: 1000, // Optional: prevents rapid refetches
   });
 
   return {
