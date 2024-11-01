@@ -1,3 +1,4 @@
+/*
 import mongoose from 'mongoose';
 import { config } from 'dotenv';
 import { sampleWorkflows, sampleAgents } from '@/data/sampleAgentData';
@@ -63,3 +64,4 @@ async function seed() {
 }
 
 seed();
+*/
