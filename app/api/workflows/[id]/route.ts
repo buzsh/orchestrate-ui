@@ -1,18 +1,18 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import { Workflow } from '@/models/Workflow';
 
 export async function PUT(
-  req: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  context: Promise<{ params: Record<string, string> }>
 ) {
   try {
-    const id = await context.params.id;
     await connectToDatabase();
-    const data = await req.json();
+    const data = await request.json();
+    const { params } = await context;
     
     const workflow = await Workflow.findByIdAndUpdate(
-      id,
+      params.id,
       { ...data, updatedAt: new Date().toISOString() },
       { new: true }
     ).populate('agents');
@@ -35,14 +35,14 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: Request,
-  context: { params: { id: string } }
+  request: NextRequest,
+  context: Promise<{ params: Record<string, string> }>
 ) {
   try {
-    const id = await context.params.id;
     await connectToDatabase();
+    const { params } = await context;
     
-    const workflow = await Workflow.findByIdAndDelete(id);
+    const workflow = await Workflow.findByIdAndDelete(params.id);
     
     if (!workflow) {
       return NextResponse.json(
