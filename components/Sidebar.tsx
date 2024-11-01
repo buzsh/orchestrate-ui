@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Workflow } from "@/data/types";
 import { FaBrain } from "react-icons/fa";
-import { HiCube, HiWrench, HiClock, HiPlus, HiTrash } from "react-icons/hi2";
+import { HiCube, HiWrench, HiClock, HiPlus, HiEllipsisVertical } from "react-icons/hi2";
 import { useDeleteWorkflow } from "@/hooks/useWorkflowMutations";
 import ConfirmDialog from "./ConfirmDialog";
 
@@ -74,10 +74,10 @@ const Sidebar: React.FC<SidebarProps> = ({
                       className={`opacity-0 group-hover:opacity-100 
                         ${selectedWorkflowId === workflow._id 
                           ? "text-white/70 hover:text-white" 
-                          : "text-gray-500 hover:text-red-500 dark:text-gray-400"
+                          : "text-gray-500 hover:text-blue-500 dark:text-gray-400"
                         }`}
                     >
-                      <HiTrash className="w-6 h-6 md:w-4 md:h-4" />
+                      <HiEllipsisVertical className="w-6 h-6 md:w-6 md:h-6" />
                     </button>
                   </div>
                 </li>
