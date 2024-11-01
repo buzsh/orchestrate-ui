@@ -13,8 +13,8 @@ export default function Home() {
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<string | null>(null);
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
 
-  const { data: workflows = [], isLoading: isLoadingWorkflows } = useWorkflowsQuery();
-  const { data: agents = [], isLoading: isLoadingAgents } = useAgentsQuery();
+  const { data: workflows = [], isLoading: isLoadingWorkflows, error: workflowsError } = useWorkflowsQuery();
+  const { data: agents = [], isLoading: isLoadingAgents, error: agentsError } = useAgentsQuery();
   const {
     createWorkflow,
     updateWorkflow,
@@ -90,7 +90,24 @@ export default function Home() {
   const isMobile = useIsMobile();
 
   if (isLoadingWorkflows || isLoadingAgents) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white mx-auto"></div>
+          <p className="mt-4">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (workflowsError || agentsError) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-center text-red-500">
+          <p>Error loading data. Please try again.</p>
+        </div>
+      </div>
+    );
   }
 
   if (isMobile) {
