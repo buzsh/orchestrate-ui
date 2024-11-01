@@ -121,6 +121,7 @@ const AgentList: React.FC<AgentListProps> = ({
                       shadow-[0_0_15px_rgba(59,130,246,0.2)] dark:shadow-[0_0_15px_rgba(37,99,235,0.2)]
                       hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] dark:hover:shadow-[0_0_20px_rgba(37,99,235,0.3)]
                       hover:border-blue-400/50 dark:hover:border-blue-600/50
+                      cursor-pointer
                       ${
                         selectedAgentId === agent._id
                           ? "bg-blue-50 dark:bg-blue-900/30 border-blue-400 dark:border-blue-600 shadow-[0_0_25px_rgba(59,130,246,0.4)] dark:shadow-[0_0_25px_rgba(37,99,235,0.4)]"
