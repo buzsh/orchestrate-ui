@@ -4,20 +4,29 @@ import { Agent } from '@/models/Agent';
 
 export async function GET() {
   try {
-    await connectToDatabase();
+    console.log('Attempting to connect to MongoDB...');
+    const db = await connectToDatabase();
+    console.log('MongoDB connection successful:', !!db);
+    
+    console.log('Fetching agents...');
     const agents = await Agent.find().populate('workflows');
+    console.log('Agents fetched:', agents.length);
+    
     return NextResponse.json(agents);
   } catch (err) {
-    console.error('Failed to fetch agents:', err);
-    if (err instanceof Error) {
-      console.error('Error details:', {
+    console.error('Failed to fetch agents:', {
+      error: err instanceof Error ? {
         message: err.message,
         stack: err.stack,
         name: err.name
-      });
-    }
+      } : err
+    });
+    
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Failed to fetch agents' }, 
+      { 
+        error: 'Failed to fetch agents',
+        details: err instanceof Error ? err.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }

@@ -19,21 +19,29 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    await connectToDatabase();
+    console.log('Attempting to connect to MongoDB...');
+    const db = await connectToDatabase();
+    console.log('MongoDB connection successful:', !!db);
+    
+    console.log('Fetching workflows...');
     const workflows = await Workflow.find().populate('agents');
+    console.log('Workflows fetched:', workflows.length);
+    
     return NextResponse.json(workflows);
   } catch (err) {
-    console.error('Failed to fetch workflows:', err);
-    // Add more detailed error logging
-    if (err instanceof Error) {
-      console.error('Error details:', {
+    console.error('Failed to fetch workflows:', {
+      error: err instanceof Error ? {
         message: err.message,
         stack: err.stack,
         name: err.name
-      });
-    }
+      } : err
+    });
+    
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Failed to fetch workflows' }, 
+      { 
+        error: 'Failed to fetch workflows',
+        details: err instanceof Error ? err.message : 'Unknown error'
+      },
       { status: 500 }
     );
   }
