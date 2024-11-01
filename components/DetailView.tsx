@@ -70,7 +70,7 @@ const DetailView: React.FC<DetailViewProps> = ({ agent, onSave }) => {
               type="text"
               value={editedAgent.role}
               onChange={(e) => setEditedAgent({ ...editedAgent, role: e.target.value })}
-              className="w-full p-2 bg-gray-50 dark:bg-gray-900 rounded-md"
+              className="w-full p-2 bg-gray-100 dark:bg-gray-900 rounded-md"
             />
           </div>
 
@@ -79,7 +79,7 @@ const DetailView: React.FC<DetailViewProps> = ({ agent, onSave }) => {
             <textarea
               value={editedAgent.systemPrompt}
               onChange={(e) => setEditedAgent({ ...editedAgent, systemPrompt: e.target.value })}
-              className="w-full h-32 p-2 bg-gray-50 dark:bg-gray-900 rounded-md"
+              className="w-full h-32 p-2 bg-gray-100 dark:bg-gray-900 rounded-md"
             />
           </div>
 
@@ -89,7 +89,7 @@ const DetailView: React.FC<DetailViewProps> = ({ agent, onSave }) => {
               <select
                 value={editedAgent.model}
                 onChange={(e) => setEditedAgent({ ...editedAgent, model: e.target.value })}
-                className="w-full p-2 bg-gray-50 dark:bg-gray-900 rounded-md"
+                className="w-full p-2 bg-gray-100 dark:bg-gray-900 rounded-md"
               >
                 <option value="gpt-4">GPT-4</option>
                 <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
@@ -107,7 +107,7 @@ const DetailView: React.FC<DetailViewProps> = ({ agent, onSave }) => {
                 step="0.1"
                 value={editedAgent.temperature}
                 onChange={(e) => setEditedAgent({ ...editedAgent, temperature: parseFloat(e.target.value) })}
-                className="w-full p-2 bg-gray-50 dark:bg-gray-900 rounded-md"
+                className="w-full p-2 bg-gray-100 dark:bg-gray-900 rounded-md"
               />
             </div>
           </div>
@@ -117,7 +117,7 @@ const DetailView: React.FC<DetailViewProps> = ({ agent, onSave }) => {
             <textarea
               value={editedAgent.description}
               onChange={(e) => setEditedAgent({ ...editedAgent, description: e.target.value })}
-              className="w-full h-24 p-2 bg-gray-50 dark:bg-gray-900 rounded-md"
+              className="w-full h-24 p-2 bg-gray-100 dark:bg-gray-900 rounded-md"
             />
           </div>
         </div>
