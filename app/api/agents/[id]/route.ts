@@ -1,16 +1,22 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import { Agent } from '@/models/Agent';
 
+interface RouteParams {
+  params: {
+    id: string;
+  };
+}
+
 export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: RouteParams
 ) {
   const id = params.id;
   
   try {
     await connectToDatabase();
-    const data = await req.json();
+    const data = await request.json();
     
     const agent = await Agent.findByIdAndUpdate(
       id,
@@ -36,8 +42,8 @@ export async function PUT(
 }
 
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  { params }: RouteParams
 ) {
   const id = params.id;
   
