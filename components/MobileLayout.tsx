@@ -150,21 +150,21 @@ const MobileLayout: React.FC<MobileLayoutProps> = ({ workflows, agents }) => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-white dark:bg-black text-gray-900 dark:text-gray-100">
-      <header className="flex-none bg-gray-100 dark:bg-gray-900 p-4 flex items-center border-b border-gray-200 dark:border-gray-800 md:hidden">
+    <div className="min-h-full flex flex-col bg-white dark:bg-black text-gray-900 dark:text-gray-100">
+      <header className="flex-none bg-gray-50 dark:bg-gray-900 p-4 flex items-center border-b border-gray-200 dark:border-gray-800 md:hidden">
         {currentView !== 'workflows' && (
           <button onClick={handleBack} className="mr-4 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
             <IoChevronBackOutline className="w-6 h-6" />
           </button>
         )}
         <h1 className="text-xl font-semibold">
-          {currentView === 'workflows' && 'Workflows'}
-          {currentView === 'agents' && (selectedWorkflow?.name || 'All Agents')}
-          {currentView === 'detail' && selectedAgent?.name}
+          {currentView === 'workflows' && 'Dashboard'}
+          {currentView === 'agents' && 'Workflows'}
+          {currentView === 'detail' && 'Agents'}
         </h1>
       </header>
 
-      <main className="flex-1 min-h-0">
+      <main className="flex-1">
         {currentView === 'workflows' && (
           <div className="h-full">
             <Sidebar

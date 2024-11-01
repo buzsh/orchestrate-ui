@@ -8,6 +8,8 @@ import { Agent, Workflow } from "@/data/types";
 import { useQuery } from '@tanstack/react-query';
 import { useCreateWorkflow, useUpdateWorkflow } from '@/hooks/useWorkflowMutations';
 import { useCreateAgent, useUpdateAgent } from '@/hooks/useAgentMutations';
+import MobileLayout from '@/components/MobileLayout';
+import useIsMobile from '@/hooks/useIsMobile';
 
 export default function Home() {
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<string | null>(null);
@@ -100,8 +102,19 @@ export default function Home() {
     ? agents.find((a: Agent) => a._id === selectedAgentId) || null
     : null;
 
+  const isMobile = useIsMobile();
+
   if (isLoadingWorkflows || isLoadingAgents) {
     return <div>Loading...</div>;
+  }
+
+  if (isMobile) {
+    return (
+      <MobileLayout
+        workflows={workflows}
+        agents={agents}
+      />
+    );
   }
 
   return (

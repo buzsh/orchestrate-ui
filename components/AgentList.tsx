@@ -54,7 +54,7 @@ const AgentList: React.FC<AgentListProps> = ({
     <div 
       ref={scrollRef}
       onScroll={handleScroll}
-      className={`w-full md:w-96 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-[#000] overflow-y-auto h-full flex flex-col ${
+      className={`w-full md:w-96 md:border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-[#000] overflow-y-auto h-full flex flex-col ${
         selectedAgentId ? 'hidden md:block' : ''
       }`}
     >
@@ -110,7 +110,7 @@ const AgentList: React.FC<AgentListProps> = ({
                 )}
                 
                 <div className="relative">
-                  <button
+                  <div
                     onClick={() => onSelectAgent(agent._id)}
                     className={`
                       w-full text-left p-4 rounded-lg
@@ -160,7 +160,7 @@ const AgentList: React.FC<AgentListProps> = ({
                         {agent.description}
                       </p>
                     </div>
-                  </button>
+                  </div>
                 </div>
               </li>
             ))}

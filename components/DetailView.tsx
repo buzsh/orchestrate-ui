@@ -86,16 +86,30 @@ const DetailView: React.FC<DetailViewProps> = ({ agent, onSave }) => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h3 className="text-lg font-semibold mb-2">Model</h3>
-              <select
-                value={editedAgent.model}
-                onChange={(e) => setEditedAgent({ ...editedAgent, model: e.target.value })}
-                className="w-full p-2 bg-gray-100 dark:bg-gray-900 rounded-md"
-              >
-                <option value="gpt-4">GPT-4</option>
-                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                <option value="claude-3-opus">Claude 3 Opus</option>
-                <option value="claude-3-sonnet">Claude 3 Sonnet</option>
-              </select>
+              <div className="relative">
+                <select
+                  value={editedAgent.model}
+                  onChange={(e) => setEditedAgent({ ...editedAgent, model: e.target.value })}
+                  className="w-full p-2 bg-gray-100 dark:bg-gray-900 rounded-md appearance-none
+                    border border-gray-200 dark:border-gray-700
+                    text-gray-900 dark:text-gray-100
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  style={{
+                    WebkitAppearance: 'none',
+                    MozAppearance: 'none'
+                  }}
+                >
+                  <option value="gpt-4">GPT-4</option>
+                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                  <option value="claude-3-opus">Claude 3 Opus</option>
+                  <option value="claude-3-sonnet">Claude 3 Sonnet</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
             <div>
@@ -107,7 +121,10 @@ const DetailView: React.FC<DetailViewProps> = ({ agent, onSave }) => {
                 step="0.1"
                 value={editedAgent.temperature}
                 onChange={(e) => setEditedAgent({ ...editedAgent, temperature: parseFloat(e.target.value) })}
-                className="w-full p-2 bg-gray-100 dark:bg-gray-900 rounded-md"
+                className="w-full p-2 bg-gray-100 dark:bg-gray-900 rounded-md
+                  border border-gray-200 dark:border-gray-700
+                  text-gray-900 dark:text-gray-100
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
