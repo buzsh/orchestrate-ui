@@ -1,16 +1,23 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
+import connectToDatabase from '@/lib/mongodb';
 import { Agent } from '@/models/Agent';
 
 export async function GET() {
   try {
-    await dbConnect();
-    const agents = await Agent.find({}).populate('workflows');
+    await connectToDatabase();
+    const agents = await Agent.find().populate('workflows');
     return NextResponse.json(agents);
-  } catch (error: unknown) {
-    console.error('Failed to fetch agents:', error);
+  } catch (err) {
+    console.error('Failed to fetch agents:', err);
+    if (err instanceof Error) {
+      console.error('Error details:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
+    }
     return NextResponse.json(
-      { error: 'Failed to fetch agents' }, 
+      { error: err instanceof Error ? err.message : 'Failed to fetch agents' }, 
       { status: 500 }
     );
   }
@@ -18,7 +25,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    await dbConnect();
+    await connectToDatabase();
     const data = await request.json();
     const agent = await Agent.create(data);
     return NextResponse.json(agent);
