@@ -15,7 +15,7 @@ interface AgentListProps {
 }
 
 const AgentList: React.FC<AgentListProps> = ({
-  agents,
+  agents = [],
   selectedAgentId,
   onSelectAgent,
   onCreateAgent,
@@ -26,6 +26,8 @@ const AgentList: React.FC<AgentListProps> = ({
   const [editedWorkflowName, setEditedWorkflowName] = useState(selectedWorkflowName);
   const [agentToDelete, setAgentToDelete] = useState<number | null>(null);
   const deleteAgent = useDeleteAgent();
+
+  const agentList = Array.isArray(agents) ? agents : [];
 
   useEffect(() => {
     setEditedWorkflowName(selectedWorkflowName);
@@ -97,13 +99,13 @@ const AgentList: React.FC<AgentListProps> = ({
 
         <div className="relative pt-2 pb-2">
           <ul className="space-y-6 relative z-10">
-            {agents.map((agent, index) => (
+            {agentList.map((agent: Agent, index: number) => (
               <li key={agent.id} className="relative group">
                 {index !== 0 && (
                   <div className="absolute left-1/2 -top-[24px] h-[20px] w-0.5 bg-gradient-to-b from-blue-200 to-blue-400 dark:from-blue-800 dark:to-blue-600 transform -translate-x-1/2 z-0" />
                 )}
                 
-                {index !== agents.length - 1 && (
+                {index !== agentList.length - 1 && (
                   <div className="absolute left-1/2 -bottom-[24px] h-[20px] w-0.5 bg-gradient-to-b from-blue-400 to-blue-200 dark:from-blue-600 dark:to-blue-800 transform -translate-x-1/2 z-0" />
                 )}
                 

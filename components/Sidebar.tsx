@@ -13,7 +13,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
-  workflows,
+  workflows = [],
   selectedWorkflowId,
   onSelectWorkflow,
   onCreateWorkflow,
@@ -35,6 +35,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
+  const workflowList = Array.isArray(workflows) ? workflows : [];
+
   return (
     <>
       <aside className="w-64 bg-gray-100 dark:bg-gray-900 overflow-y-auto">
@@ -51,7 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
           <ul className="space-y-1">
-            {workflows.map((workflow) => (
+            {workflowList.map((workflow: Workflow) => (
               <li key={workflow.id} className="group relative">
                 <div
                   onClick={() => onSelectWorkflow(workflow.id)}
