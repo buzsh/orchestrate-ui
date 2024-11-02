@@ -1,26 +1,24 @@
 "use client";
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { GrGraphQl } from "react-icons/gr";
 import { useAuth } from '@/contexts/AuthContext';
 import { auth } from '@/lib/firebase';
-import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
 
 const TopHeader: React.FC = () => {
   const { user } = useAuth();
+  const router = useRouter();
 
-  const handleLogin = async () => {
-    try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error('Login failed:', error);
-    }
+  const handleNavigateToLogin = () => {
+    router.push('/login');
   };
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      router.push('/login');
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -43,17 +41,19 @@ const TopHeader: React.FC = () => {
             </span>
             <button
               onClick={handleLogout}
-              className="px-4 py-1 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-colors"
+              className="px-4 py-1 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 
+                       dark:hover:bg-red-900/20 rounded-md transition-colors"
             >
               Logout
             </button>
           </div>
         ) : (
           <button
-            onClick={handleLogin}
-            className="px-4 py-1 text-sm bg-blue-500 text-white hover:bg-blue-600 rounded-md transition-colors"
+            onClick={handleNavigateToLogin}
+            className="px-4 py-1 text-sm bg-blue-500 text-white hover:bg-blue-600 
+                     rounded-md transition-colors"
           >
-            Login with Google
+            Login
           </button>
         )}
       </div>
