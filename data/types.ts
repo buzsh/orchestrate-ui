@@ -1,5 +1,6 @@
 export interface Agent {
   _id: string;
+  userId: string;
   name: string;
   description: string;
   role: string;
@@ -14,6 +15,7 @@ export interface Agent {
 
 export interface Workflow {
   _id: string;
+  userId: string;
   name: string;
   description: string;
   agents: Agent[];

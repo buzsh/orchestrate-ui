@@ -4,69 +4,84 @@ import { useAuth } from '@/contexts/AuthContext';
 
 // Queries
 export function useWorkflowsQuery() {
-  return useQuery<Workflow[]>({
-    queryKey: ['workflows'],
+  const { user } = useAuth();
+  
+  return useQuery({
+    queryKey: ['workflows', user?.uid],
     queryFn: async () => {
+      if (!user) throw new Error('Not authenticated');
+      
+      const token = await user.getIdToken();
       const response = await fetch('/api/workflows', {
         headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error('Failed to fetch workflows');
       }
-      const data = await response.json();
-      if ('error' in data) {
-        throw new Error(data.error);
-      }
-      return data;
+      
+      return response.json();
     },
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    initialData: [],
+    enabled: !!user, // Only fetch when user is logged in
   });
 }
 
 export function useAgentsQuery() {
   const { user } = useAuth();
   
-  return useQuery<Agent[]>({
+  return useQuery({
     queryKey: ['agents', user?.uid],
     queryFn: async () => {
-      const token = await user?.getIdToken();
+      if (!user) throw new Error('Not authenticated');
+      
+      const token = await user.getIdToken();
       const response = await fetch('/api/agents', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch agents');
+      }
+      
       return response.json();
     },
-    enabled: !!user,
+    enabled: !!user, // Only fetch when user is logged in
   });
 }
 
 // Mutations
 export function useMutations() {
   const queryClient = useQueryClient();
-  
+  const { user } = useAuth();
+
+  const getHeaders = async () => ({
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${await user?.getIdToken()}`,
+  });
+
   const createWorkflow = useMutation({
-    mutationFn: async (workflow: Omit<Workflow, '_id'>) => {
+    mutationFn: async (newWorkflow: Omit<Workflow, '_id'>) => {
       const response = await fetch('/api/workflows', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(workflow)
+        headers: await getHeaders(),
+        body: JSON.stringify(newWorkflow),
       });
       return response.json();
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['workflows'] })
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['workflows'] });
+    },
   });
 
   const updateWorkflow = useMutation({
     mutationFn: async (workflow: Workflow) => {
       const response = await fetch(`/api/workflows/${workflow._id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getHeaders(),
         body: JSON.stringify(workflow)
       });
       return response.json();
@@ -77,7 +92,8 @@ export function useMutations() {
   const deleteWorkflow = useMutation({
     mutationFn: async (workflowId: string) => {
       const response = await fetch(`/api/workflows/${workflowId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: await getHeaders(),
       });
       if (!response.ok) throw new Error('Failed to delete workflow');
       return response.json();
@@ -89,7 +105,7 @@ export function useMutations() {
     mutationFn: async (agent: Omit<Agent, '_id'>) => {
       const response = await fetch('/api/agents', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getHeaders(),
         body: JSON.stringify(agent)
       });
       return response.json();
@@ -101,7 +117,7 @@ export function useMutations() {
     mutationFn: async (agent: Agent) => {
       const response = await fetch(`/api/agents/${agent._id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await getHeaders(),
         body: JSON.stringify(agent)
       });
       return response.json();
@@ -112,7 +128,8 @@ export function useMutations() {
   const deleteAgent = useMutation({
     mutationFn: async (agentId: string) => {
       const response = await fetch(`/api/agents/${agentId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: await getHeaders(),
       });
       if (!response.ok) throw new Error('Failed to delete agent');
       return response.json();
