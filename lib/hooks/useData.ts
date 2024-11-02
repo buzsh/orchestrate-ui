@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Agent, Workflow } from '@/data/types';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Queries
 export function useWorkflowsQuery() {
@@ -28,27 +29,20 @@ export function useWorkflowsQuery() {
 }
 
 export function useAgentsQuery() {
+  const { user } = useAuth();
+  
   return useQuery<Agent[]>({
-    queryKey: ['agents'],
+    queryKey: ['agents', user?.uid],
     queryFn: async () => {
+      const token = await user?.getIdToken();
       const response = await fetch('/api/agents', {
         headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      if ('error' in data) {
-        throw new Error(data.error);
-      }
-      return data;
+      return response.json();
     },
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    initialData: [],
+    enabled: !!user,
   });
 }
 

@@ -8,6 +8,7 @@ const workflowStepSchema = new mongoose.Schema({
 });
 
 const workflowSchema = new mongoose.Schema({
+  userId: { type: String, required: true },
   name: { type: String, required: true },
   description: String,
   agents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Agent' }],

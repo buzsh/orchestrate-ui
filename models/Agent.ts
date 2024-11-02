@@ -15,6 +15,7 @@ const conversationSchema = new mongoose.Schema({
 });
 
 const agentSchema = new mongoose.Schema({
+  userId: { type: String, required: true },
   name: { type: String, required: true },
   description: String,
   role: String,

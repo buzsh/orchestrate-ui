@@ -1,16 +1,23 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import { Agent } from '@/models/Agent';
+import { auth } from '@/lib/firebase-admin';
+import { headers } from 'next/headers';
 
 export async function GET() {
   try {
-    console.log('Attempting to connect to MongoDB...');
-    const db = await connectToDatabase();
-    console.log('MongoDB connection successful:', !!db);
-    
-    console.log('Fetching agents...');
-    const agents = await Agent.find().populate('workflows');
-    console.log('Agents fetched:', agents.length);
+    const headersList = await headers();
+    const authHeader = headersList.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const token = authHeader.split('Bearer ')[1];
+    const decodedToken = await auth.verifyIdToken(token);
+    const userId = decodedToken.uid;
+
+    await connectToDatabase();
+    const agents = await Agent.find({ userId }).populate('workflows');
     
     return NextResponse.json(agents);
   } catch (err) {
@@ -34,9 +41,18 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    await connectToDatabase();
+    const headersList = await headers();
+    const authHeader = headersList.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const token = authHeader.split('Bearer ')[1];
+    const decodedToken = await auth.verifyIdToken(token);
+    const userId = decodedToken.uid;
+
     const data = await request.json();
-    const agent = await Agent.create(data);
+    const agent = await Agent.create({ ...data, userId });
     return NextResponse.json(agent);
   } catch (error: unknown) {
     console.error('Failed to create agent:', error);
